@@ -61,13 +61,18 @@ var initDb = function(callback) {
   });
 };
 
-app.post('/sac', function (req, res) {
-  //res.send(req.body);
+var sac = function(req,res, act){
   var mainObj = {}
   mainObj.nome = "Cálculo de amortização"
-  mainObj.valorFinanciado = req.body.valor;
-  mainObj.taxa = req.body.taxa;
-  mainObj.prazo = req.body.prazo;
+  if (act == "get"){
+    mainObj.valorFinanciado = req.query.valor;
+    mainObj.taxa = req.query.taxa;
+    mainObj.prazo = req.query.prazo;
+  } else {
+    mainObj.valorFinanciado = req.body.valor;
+    mainObj.taxa = req.body.taxa;
+    mainObj.prazo = req.body.prazo;
+  }
   
   mainObj.parcelas = {};
 
@@ -111,10 +116,17 @@ app.post('/sac', function (req, res) {
       if (saldo <= 0 ){
           break;
       }
-
   }
-  
-  res.send(mainObj);
+
+  return mainObj;
+}
+
+app.post('/sac', function (req, res) {
+  res.send(sac(req,res, "post"));
+});
+
+app.get('/sac', function (req, res) {
+  res.send(sac(req,res, "get"));
 });
 
 app.get('/', function (req, res) {
